@@ -20,6 +20,7 @@
  *
  * To understand everything else, start reading main().
  */
+#define _GNU_SOURCE
 #include <errno.h>
 #include <locale.h>
 #include <signal.h>
@@ -140,6 +141,11 @@ typedef struct {
 	int isfloating;
 	int monitor;
 } Rule;
+
+/* debug */
+FILE *log_file;
+static void debug(char *);
+static char *asprint_wrapper(const char *, ...);
 
 /* function declarations */
 static void applyrules(Client *c);
@@ -1258,6 +1264,8 @@ propertynotify(XEvent *e)
 void
 quit(const Arg *arg)
 {
+	debug(asprint_wrapper("============= END ==========="));
+	fclose(log_file);
 	running = 0;
 }
 
@@ -2140,9 +2148,55 @@ zoom(const Arg *arg)
 	pop(c);
 }
 
+#include <time.h>
+
+char *asprint_wrapper(const char *format, ...)
+{
+	va_list args;
+	va_start(args, format);
+
+	char *result;
+	if (vasprintf(&result, format, args) == -1) {
+		// vasprintf returns -1 on failure
+		perror("Error while allocating memory");
+		exit(EXIT_FAILURE);
+	}
+	va_end(args);
+	return result;
+}
+
+void debug(char* info)
+{
+	time_t rawtime;
+	struct tm *timeinfo;
+
+	time(&rawtime);
+	timeinfo = localtime(&rawtime);
+
+	char timestamp[24];
+	memset(timestamp, 0, 24);
+	strftime(timestamp, sizeof(timestamp), "%Y/%m/%d - %H:%M:%S: ", timeinfo);
+
+	fprintf(log_file, "%s", timestamp);
+	fprintf(log_file, info);
+	fprintf(log_file, "\n");
+	free(info);
+}
+
 int
 main(int argc, char *argv[])
 {
+	char debug_file_path[64];
+	memset(debug_file_path, 0, 64);
+	sprintf(debug_file_path, "%s/dwm_debug.log", getenv("HOME"));
+
+	log_file = fopen(debug_file_path, "a");
+	if (log_file == NULL) {
+		fprintf(stderr, "Can not open file to write (dwm debug).\n");
+		return -1;
+	}
+	debug(asprint_wrapper("=========== BEGIN ==========="));
+
 	if (argc == 2 && !strcmp("-v", argv[1]))
 		die("dwm-"VERSION);
 	else if (argc != 1)
