@@ -238,6 +238,7 @@ static void tag(const Arg *arg);
 static void tagmon(const Arg *arg);
 static void tagtoleft(const Arg *arg);
 static void tagtoright(const Arg *arg);
+static void terminate(const Arg *arg);
 static void tile(Monitor *m);
 static void togglebar(const Arg *arg);
 static void togglefloating(const Arg *arg);
@@ -299,6 +300,7 @@ static void (*handler[LASTEvent]) (XEvent *) = {
 };
 static Atom wmatom[WMLast], netatom[NetLast], xatom[XLast];
 static int running = 1;
+static int killx = 0;
 static Cur *cursor[CurLast];
 static Clr **scheme;
 static Display *dpy;
@@ -1993,6 +1995,40 @@ tile(Monitor *m)
 }
 
 void
+terminate(const Arg *arg)
+{
+	const char *const *p = &dmenucmd[1];
+
+	char answer[8];
+	char prompt[1024];
+	memset(prompt, 0, 1024);
+	strcat(prompt, "printf \"No\nYes\n\" | dmenu -x -p \"Quit dwm ?\" ");
+	for (int i = strlen(prompt); *p; p++)
+	{
+		prompt[i++] = '"';
+		strcat(&prompt[i], *p);
+		i += strlen(*p);
+		prompt[i++] = '"';
+		prompt[i++] = ' ';
+	}
+
+	FILE *question = popen(prompt, "r");
+	if (!question)
+	{
+		perror("popen in terminate");
+		return;
+	}
+	if (fgets(answer, sizeof(answer), question) == NULL)
+		perror("fgets in terminate");
+	else if (!strcmp(answer, "Yes\n"))
+	{
+		quit(arg);
+		killx = 1;
+	}
+	pclose(question);
+}
+
+void
 togglebar(const Arg *arg)
 {
 	selmon->showbar = !selmon->showbar;
@@ -2632,5 +2668,7 @@ main(int argc, char *argv[])
 	run();
 	cleanup();
 	XCloseDisplay(dpy);
+	if (killx)
+		system("pkill xinit");
 	return EXIT_SUCCESS;
 }

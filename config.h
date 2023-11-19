@@ -10,8 +10,8 @@ static const int systraypinningfailfirst = 1;   /* 1: if pinning fails, display 
 static const int showsystray        = 1;        /* 0 means no systray */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
-static const char *fonts[]          = { /* noto fonts cjk */ "CodeNewRoman Nerd Font Mono:size=15" };
-static const char dmenufont[]       = "CodeNewRoman Nerd Font Mono:size=15";
+static const char *fonts[]          = { "CodeNewRoman Nerd Font Mono:size=14", "Noto Sans Mono CJK TC:size=12" };
+static const char dmenufont[]       = "CodeNewRoman Nerd Font Mono:size=14";
 static const char col_gray1[]       = "#222222"; // Background, also for dmenu
 static const char col_gray2[]       = "#27504f"; // Blue Marrs Green
 static const char col_gray3[]       = "#e3a939"; // Yellow Marrs Green
@@ -24,7 +24,9 @@ static const char *colors[][3]      = {
 };
 
 static const char *const autostart[] = {
-	"st", NULL,
+	"sh", "-c", "feh --no-fehbg --bg-scale ~/images/wallpaper", NULL,
+	"sh", "-c", "imwheel -k -b 45", NULL,
+	"picom", NULL,
 	NULL /* terminate */
 };
 
@@ -39,7 +41,7 @@ static const Rule rules[] = {
 	/* class      instance    title       tags mask     isfloating  monitor */
 	{ "Firefox",     NULL,       NULL,       1 << 0,       0,          -1 },
 	{ "Gimp",        NULL,       NULL,       1 << 2,       1,          -1 },
-	{ NULL,          NULL,       "Event Tester",  0,       0,          -1 }, /* xev */
+	{ "KeePassXC",   NULL,       NULL,       1 << 8,       0,          -1 },
 };
 
 /* layout(s) */
@@ -70,7 +72,6 @@ static const Layout layouts[] = {
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_gray2, "-sf", col_gray3, NULL };
-static const char *exitdwm[]  = { "dmenu_exit", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_gray2, "-sf", col_gray3, NULL };
 static const char *termcmd[]  = { "st", NULL };
 
 /* shortcuts */
@@ -119,7 +120,7 @@ static const Key keys[] = {
 	TAGKEYS(                        XK_7,                      6)
 	TAGKEYS(                        XK_8,                      7)
 	TAGKEYS(                        XK_9,                      8)
-	{ MODKEY|ShiftMask,             XK_q,      spawn,          {.v = exitdwm } },
+	{ MODKEY|ShiftMask,             XK_q,      terminate,      {0} },
 	{ MODKEY|ShiftMask,             XK_r,      quit,           {0} },
 
         /* Favorite apps (using Winkey) */
