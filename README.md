@@ -1,12 +1,23 @@
 # dwm
+My personnal fork of dwm, tracking changes from upstream at [suckless](https://suckless.org/).
+[Insert screenshot]
 
-My personnal fork of dwm.
+### Additional features
+todo: list patches + tweaks
 
-## Repository structure
+### Requirements
+- Some fonts
 
-This branch holds all the tweakings and the picked up patches.
+### How to use
 
-The master branch is just a mirror from upstream that points to suckless git.
-It does not contain any modification so to allow easy update from upstream,
-that will later be merged to the custom branch.
+Easy: just clone the repository, cd into it and run `make install` as a superuser.
 
+`dwm` is now installed. and calling it from startx will ~~~~~~~~~~~~~~
+
+### How to maintain
+
+First, make sure the remote is set:
+
+`git remote add upstream https://git.suckless.org/dwm`
+
+Eventually check it with `git remote -v` then `git pull upstream/master`.
