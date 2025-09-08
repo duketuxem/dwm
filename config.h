@@ -25,7 +25,7 @@ static const char *colors[][3]      = {
 };
 
 static const char *const autostart[] = {
-	"sh", "-c", "feh --no-fehbg --bg-scale ~/images/wallpaper", NULL,
+	"sh", "-c", "feh --no-fehbg --bg-scale ~/.local/share/wallpaper", NULL,
 	"sh", "-c", "imwheel -k -b 45", NULL,
 	"picom", NULL,
 	NULL /* terminate */
