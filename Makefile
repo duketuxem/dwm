@@ -41,5 +41,7 @@ install: all
 uninstall:
 	rm -f ${DESTDIR}${PREFIX}/bin/dwm\
 		${DESTDIR}${MANPREFIX}/man1/dwm.1
+	rmdir ${DESTDIR}${PREFIX}/bin\
+		${DESTDIR}${MANPREFIX}/man1
 
 .PHONY: all clean dist install uninstall
